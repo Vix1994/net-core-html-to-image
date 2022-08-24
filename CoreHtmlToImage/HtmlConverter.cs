@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace CoreHtmlToImage
 {
@@ -110,14 +111,21 @@ namespace CoreHtmlToImage
                 args = $"--quality {quality} --width {width} -f {imageFormat} {url} \"{filename}\"";
             }
 
-            Process process = Process.Start(new ProcessStartInfo(toolFilepath, args)
+            Process process = new Process();
+
+            var processInfo = new ProcessStartInfo(toolFilepath, args)
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 WorkingDirectory = directory,
                 RedirectStandardError = true
-            });
+            };
+
+            process.StartInfo = processInfo;
+
+            var init = process.Start();
+            while (!init) Task.Delay(500);
 
             process.ErrorDataReceived += Process_ErrorDataReceived;
             process.WaitForExit();

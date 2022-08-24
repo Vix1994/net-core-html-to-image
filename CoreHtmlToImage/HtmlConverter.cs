@@ -119,7 +119,7 @@ namespace CoreHtmlToImage
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 WorkingDirectory = directory,
-                RedirectStandardError = true
+                RedirectStandardOutput = true,
             };
 
             process.StartInfo = processInfo;
@@ -127,8 +127,11 @@ namespace CoreHtmlToImage
             var init = process.Start();
             while (!init) Task.Delay(500);
 
-            process.ErrorDataReceived += Process_ErrorDataReceived;
-            process.WaitForExit();
+            string answer = process.StandardOutput.ReadToEnd();
+
+            process.WaitForExit(1000 * 60);
+
+            Console.WriteLine($"answer: {answer}");
 
             if (File.Exists(filename))
             {
